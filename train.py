@@ -5,16 +5,16 @@ import tensorflow.keras as keras
 
 DATA_PATH = './cleaned_data.csv'
 LEARNING_RATE = 0.0001
-EPOCHS = 15
+EPOCHS = 20
 BATCH_SIZE = 40
 SAVE_MODEL_PATH = './er_model.h5'
 OUTPUT_KEYWORD = 6
+MFCC_PATH='./cleaned_mfcc_feature.npy'
 
 
 def load_dataset(data_path):
-    data = pd.read_csv(data_path, sep='\t')
-    x = np.array(data['mfcc'].replace("'", ''))
-
+    data = pd.read_csv(data_path)
+    x = np.load(MFCC_PATH,allow_pickle=True)
     y = np.array(data['emotion'])
     print(x[0])
     print(len(x), len(y))
@@ -38,13 +38,13 @@ def build_model(input_shape, learning_rate, loss='sparse_categorical_crossentrop
     model = keras.Sequential()
 
     # layer 1
-    model.add(keras.layers.Conv2D(128, (3, 3), activation='relu', input_shape=input_shape,
+    model.add(keras.layers.Conv2D(64, (3, 3), activation='relu', input_shape=input_shape,
                                   kernel_regularizer=keras.regularizers.l2(0.001)))
     model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.MaxPool2D((2, 2), strides=(2, 2), padding='same'))
 
     # layer 2
-    model.add(keras.layers.Conv2D(64, (3, 3), activation='relu',
+    model.add(keras.layers.Conv2D(32, (3, 3), activation='relu',
                                   kernel_regularizer=keras.regularizers.l2(0.001)))
     model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.MaxPool2D((2, 2), strides=(2, 2), padding='same'))
